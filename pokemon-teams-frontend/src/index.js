@@ -23,11 +23,14 @@ function showTrainers(trainers){
     let button = document.createElement("button")
     button.setAttribute("data-trainer-id", trainers[i]["id"])
     button.innerText = "Add Pokemon"
+    button.addEventListener("click", () => {
+      let trainerId = button.attributes["data-trainer-id"].value
+      addNewPokemon(trainerId)
+    })
     trainerCard.appendChild(button)
 
     let pokemonList = document.createElement("ul")
 
-    console.log(trainers[i].pokemon)
     trainers[i].pokemon.forEach(pokemon => {
       let pokemonLi = document.createElement("li")
       pokemonLi.innerText = `${pokemon["nickname"]} (${pokemon["species"]})`
@@ -35,8 +38,11 @@ function showTrainers(trainers){
       pokeButton.innerText = "Release"
       pokeButton.classList.add("release")
       pokeButton.setAttribute("data-pokemon-id", pokemon["id"])
+      pokeButton.addEventListener("click", () => {
+        releasePokemon(pokemon["id"])
+        pokemonLi.remove()
+      })
       pokemonLi.appendChild(pokeButton)
-
       pokemonList.appendChild(pokemonLi)
     });
 
@@ -45,6 +51,36 @@ function showTrainers(trainers){
   }
 } 
 
+// Delete pokemon from trainer 
+function releasePokemon(pokemonId){
+ fetch(`http://localhost:3000/pokemons/${pokemonId}`, {
+   method: 'DELETE',
+   headers: {
+     "Content-Type": "application/json",
+     "Accept": "application/json"
+   }
+ })
+  .then(resp => resp.json())
+  .then(json => console.log(json))
+}
+
+//create new pokemon for trainer 
+function addNewPokemon(trainerId){
+  fetch("http://localhost:3000/pokemons", {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+   }, 
+   body: JSON.stringify({"trainer_id": trainerId})
+  })
+    .then(resp => resp.json())
+    .then(json => console.log(json))
+}
+
+function appendPokemon(pokemon){
+  // do some stuff
+}
 
 // Do ALL THE THINGS
 document.addEventListener("DOMContentLoaded", () => {
