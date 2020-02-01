@@ -6,7 +6,7 @@ function loadTrainers(){
   fetch(TRAINERS_URL)
     .then(resp => resp.json())
     .then(trainers => showTrainers(trainers))
-    .catch(error => console.log(error.message))
+    .catch(error => alert(error.message))
 }
 
 function showTrainers(trainers){
@@ -62,6 +62,7 @@ function releasePokemon(pokemonId){
  })
   .then(resp => resp.json())
   .then(json => console.log(json))
+  .catch(error => alert(error.message))
 }
 
 //create new pokemon for trainer 
@@ -75,11 +76,31 @@ function addNewPokemon(trainerId){
    body: JSON.stringify({"trainer_id": trainerId})
   })
     .then(resp => resp.json())
-    .then(json => console.log(json))
+    .then(json => appendPokemon(json))
+    .catch(error => console.log(error))
+   
 }
 
 function appendPokemon(pokemon){
   // do some stuff
+  if (pokemon["message"]){
+    alert(pokemon["message"])}
+  else {
+    let trainerCard = document.querySelector(`[data-id='${pokemon["trainer_id"]}']`)
+    let pokemonList = trainerCard.querySelector("ul")
+    let pokemonLi = document.createElement("li")
+    pokemonLi.innerText = `${pokemon["nickname"]} (${pokemon["species"]})`
+    let pokeButton = document.createElement("button")
+    pokeButton.innerText = "Release"
+    pokeButton.classList.add("release")
+    pokeButton.setAttribute("data-pokemon-id", pokemon["id"])
+    pokeButton.addEventListener("click", () => {
+      releasePokemon(pokemon["id"])
+      pokemonLi.remove()
+    })
+    pokemonLi.appendChild(pokeButton)
+    pokemonList.appendChild(pokemonLi)
+  }
 }
 
 // Do ALL THE THINGS
